@@ -1,16 +1,23 @@
 from flask import Flask
+import RPi.GPIO as GPIO
 
 app = Flask(__name__)
 
+GPIO.setmode(GPIO.BCM)
+pin =26
+state = 0
+
+GPIO.setup(pin, GPIO.OUT)
+GPIO.output(pin, state)
 
 @app.route('/')
-@app.route('/<name>')
-def index(name="Treehouse"):
-	return "Hello from "+ name
+@app.route('/toggle')
+def toggle():
+	state += 1
+	state %= 2
+	GPIO.output(pin, state)
+	return "state = {}".format(str(state))
 
 
-@app.route('/add/<int:num1>/<int:num2>')
-def add(num1, num2):
-	return "{}".format(num1 + num2)
 
 app.run(debug=True, port=800, host='0.0.0.0')
